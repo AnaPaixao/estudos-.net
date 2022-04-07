@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "oSYTthCLcd+KlQndax5sg4w/SxEv1yWILmneWBWDrBUFKb8VYKrOffo2oDwuAuOZMNlHCrUP+kmubvlWfpn/6g==",
+  "dgSpecHash": "z5xDtD+4qcfD4NdhbJMABRBQ7IuKI0mR2iJXqrRDcRwMc5z4wLL5RPBdILTHJ3Lv5CStVMLOgthw8kNnYxdVmA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Ana\\Documents\\backend\\CatalogoApi\\CatalogoApi.csproj",
+  "projectFilePath": "C:\\Users\\Ana\\Documents\\c-sharp-.net\\CatalogoApi\\CatalogoApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Ana\\.nuget\\packages\\humanizer.core\\2.13.14\\humanizer.core.2.13.14.nupkg.sha512",
     "C:\\Users\\Ana\\.nuget\\packages\\microsoft.entityframeworkcore\\7.0.0-preview.2.22153.1\\microsoft.entityframeworkcore.7.0.0-preview.2.22153.1.nupkg.sha512",

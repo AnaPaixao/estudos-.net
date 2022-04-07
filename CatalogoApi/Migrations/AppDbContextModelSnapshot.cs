@@ -42,7 +42,7 @@ namespace CatalogoApi.Migrations
 
                     b.HasKey("CategoriaId");
 
-                    b.ToTable("categorias");
+                    b.ToTable("Categorias");
                 });
 
             modelBuilder.Entity("catalogoApi.Models.Produto", b =>

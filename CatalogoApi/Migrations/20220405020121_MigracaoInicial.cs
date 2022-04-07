@@ -13,7 +13,7 @@ namespace CatalogoApi.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "categorias",
+                name: "Categorias",
                 columns: table => new
                 {
                     CategoriaId = table.Column<int>(type: "integer", nullable: false)
@@ -23,7 +23,7 @@ namespace CatalogoApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_categorias", x => x.CategoriaId);
+                    table.PrimaryKey("PK_Categorias", x => x.CategoriaId);
                 });
 
             migrationBuilder.CreateTable(
@@ -44,9 +44,9 @@ namespace CatalogoApi.Migrations
                 {
                     table.PrimaryKey("PK_Produtos", x => x.ProdutoId);
                     table.ForeignKey(
-                        name: "FK_Produtos_categorias_CategoriaId",
+                        name: "FK_Produtos_Categorias_CategoriaId",
                         column: x => x.CategoriaId,
-                        principalTable: "categorias",
+                        principalTable: "Categorias",
                         principalColumn: "CategoriaId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -64,7 +64,7 @@ namespace CatalogoApi.Migrations
                 name: "Produtos");
 
             migrationBuilder.DropTable(
-                name: "categorias");
+                name: "Categorias");
         }
     }
 }

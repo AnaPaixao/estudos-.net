@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Ana\\Documents\\backend\\CatalogoApi\\CatalogoApi.csproj": {}
+    "C:\\Users\\Ana\\Documents\\c-sharp-.net\\CatalogoApi\\CatalogoApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Ana\\Documents\\backend\\CatalogoApi\\CatalogoApi.csproj": {
+    "C:\\Users\\Ana\\Documents\\c-sharp-.net\\CatalogoApi\\CatalogoApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ana\\Documents\\backend\\CatalogoApi\\CatalogoApi.csproj",
+        "projectUniqueName": "C:\\Users\\Ana\\Documents\\c-sharp-.net\\CatalogoApi\\CatalogoApi.csproj",
         "projectName": "CatalogoApi",
-        "projectPath": "C:\\Users\\Ana\\Documents\\backend\\CatalogoApi\\CatalogoApi.csproj",
+        "projectPath": "C:\\Users\\Ana\\Documents\\c-sharp-.net\\CatalogoApi\\CatalogoApi.csproj",
         "packagesPath": "C:\\Users\\Ana\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ana\\Documents\\backend\\CatalogoApi\\obj\\",
+        "outputPath": "C:\\Users\\Ana\\Documents\\c-sharp-.net\\CatalogoApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Ana\\AppData\\Roaming\\NuGet\\NuGet.Config"

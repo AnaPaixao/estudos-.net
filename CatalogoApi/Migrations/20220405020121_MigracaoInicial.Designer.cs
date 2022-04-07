@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CatalogoApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220403195605_MigracaoInicial")]
+    [Migration("20220405020121_MigracaoInicial")]
     partial class MigracaoInicial
     {
         /// <inheritdoc />
@@ -45,7 +45,7 @@ namespace CatalogoApi.Migrations
 
                     b.HasKey("CategoriaId");
 
-                    b.ToTable("categorias");
+                    b.ToTable("Categorias");
                 });
 
             modelBuilder.Entity("catalogoApi.Models.Produto", b =>
