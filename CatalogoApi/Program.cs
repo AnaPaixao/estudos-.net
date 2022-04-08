@@ -25,6 +25,10 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connect
 var app = builder.Build();
 
 //definir endpoints - Categortia 
+app.MapGet("/categoriaprodutos", async (AppDbContext db) => await db.Categorias.Include(c => c.Produtos).ToListAsync()
+)
+.Produces<List<Categoria>>(StatusCodes.Status200OK)
+.WithTags("Categorias");
 
 // endpoint para criar um novo recurso (Categoria)
 // - Url padrão para o endpoint - "/categorias"
@@ -35,18 +39,21 @@ app.MapPost("/categorias", async (Categoria categoria, AppDbContext db) => {
   await db.SaveChangesAsync();
 
   return Results.Created($"/categorias/{categoria.CategoriaId}", categoria);
-});
+})
+.WithTags("Categorias");
 
 // endpoint para receber uma lista de categorias 
 // - verbo HTTP usado - GET
 // - corpo da resposta - Um array de representação JSON de objetos Categoria
 // - código de status - 200 (OK)
-app.MapGet("/categorias", async (AppDbContext db) => await db.Categorias.ToListAsync());
+app.MapGet("/categorias", async (AppDbContext db) => await db.Categorias.ToListAsync())
+.WithTags("Categorias");
 
 // endpoint para obter uma Categoria pelo seu ID
 app.MapGet("/categorias/{id:int}", async (int id, AppDbContext db) => {
   return await db.Categorias.FindAsync(id) is Categoria categoria ? Results.Ok(categoria) : Results.NotFound();
-});
+})
+.WithTags("Categorias");
 
 // Endpoint para atualizar uma Categoria pelo ID
 app.MapPut("/categorias/{id:int}", async (int id, Categoria categoria, AppDbContext db) => {
@@ -63,7 +70,8 @@ app.MapPut("/categorias/{id:int}", async (int id, Categoria categoria, AppDbCont
 
   await db.SaveChangesAsync();
   return Results.Ok(categoriaDB);
-});
+})
+.WithTags("Categorias");
 
 // endpoint para deletar uma Categoria pelo seu ID
 app.MapDelete("/categorias/{id:int}", async (int id, AppDbContext db) => {
@@ -75,7 +83,8 @@ app.MapDelete("/categorias/{id:int}", async (int id, AppDbContext db) => {
   await db.SaveChangesAsync();
 
   return Results.NoContent();
-});
+})
+.WithTags("Categorias");
 
 
 
@@ -114,7 +123,7 @@ app.MapGet("/produtos/{id:int}", async (int id, AppDbContext db) => {
 app.MapPut("/produtos", async (int produtoId, string produtoNome, AppDbContext db) => {
   var produtoDB = db.Produtos.SingleOrDefault(s => s.ProdutoId == produtoId);
 
-  if(produtoDB == null) return Results.NotFound();
+  if(produtoDB == null) return Results.NotFound("Produto não encontrado");
 
   produtoDB.Nome = produtoNome;
 
@@ -127,6 +136,74 @@ app.MapPut("/produtos", async (int produtoId, string produtoNome, AppDbContext d
 .WithName("AtualizaNomeProduto")
 .WithTags("Produtos");
 
+app.MapPut("/produtos/{id:int}", async (int id, Produto produto, AppDbContext db) => {
+  if(produto.ProdutoId != id) {
+    return Results.BadRequest("Ids não conferem");
+  }
+
+  var produtoDB = await db.Produtos.FindAsync(id);
+
+  if(produtoDB is null) return Results.NotFound("Produto não encontrado");
+
+  produtoDB.Nome = produto.Nome;
+  produtoDB.Descricao = produto.Descricao;
+  produtoDB.Preco = produto.Preco;
+  produtoDB.DataCompra = produto.DataCompra;
+  produtoDB.Estoque = produto.Estoque;
+  produtoDB.ImagemUrl = produto.ImagemUrl;
+  produtoDB.CategoriaId = produto.CategoriaId;
+
+  await db.SaveChangesAsync();
+  return Results.Ok(produtoDB);
+})
+.Produces<Produto>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status400BadRequest)
+.Produces(StatusCodes.Status404NotFound)
+.WithName("AtualizaProduto")
+.WithTags("Produtos");
+
+app.MapDelete("/produtos/{id:int}", async(int id, AppDbContext db) => {
+  var produtoDB = await db.Produtos.FindAsync(id);
+
+  if(produtoDB is null) {
+    return Results.NotFound("Produto não encontrado");
+  }
+  db.Produtos.Remove(produtoDB);
+  await db.SaveChangesAsync();
+  return Results.Ok(produtoDB);
+})
+.Produces<Produto>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound)
+.WithName("DeletaProduto")
+.WithTags("Produtos");
+
+
+// endpoint para localizar um Produto por nome usando um critério
+app.MapGet("/produtos/nome/{criterio}", (string criterio, AppDbContext db) => {
+  
+  var produtosSelecionados = db.Produtos.Where(x => x.Nome.ToLower().Contains(criterio.ToLower())).ToList();
+
+  return produtosSelecionados.Count > 0 ? Results.Ok(produtosSelecionados) : Results.NotFound(Array.Empty<Produto>());  
+  
+})
+.Produces<List<Produto>>(StatusCodes.Status200OK)
+.WithName("FiltrarPorNome")
+.WithTags("Produtos");
+
+// endpoint para obter os produtos com paginação
+app.MapGet("/produtosporpagina", async (int numeroPagina, int tamanhoPagina, AppDbContext db) => {
+  await db.Produtos.Skip((numeroPagina - 1) * tamanhoPagina).Take(tamanhoPagina).ToListAsync();
+})
+.Produces<List<Produto>>(StatusCodes.Status200OK)
+.WithName("ProdutosPorPagina")
+.WithTags("Produtos");
+
+// endpoint para obter categorias com seus produtos 
+app.MapGet("/categoriaprodutos", async (AppDbContext db) => {
+  await db.Categorias.Include(c => c.Produtos).ToListAsync();
+})
+.Produces<List<Categoria>>(StatusCodes.Status200OK)
+.WithTags("Categorias");
 
 
 // Configure the HTTP request pipeline. - Configure

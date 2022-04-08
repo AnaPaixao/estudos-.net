@@ -6,7 +6,7 @@ namespace catalogoApi.Models {
     public string? Nome { get; set; }
     public string? Descricao { get; set; }
 
-    [JsonIgnore]
+    // [JsonIgnore]
     public ICollection<Produto>? Produtos {get; set;}
   }
 }
