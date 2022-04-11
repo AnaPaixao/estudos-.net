@@ -8,5 +8,6 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0-preview.2"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-preview.2.22153.1"/>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.2"/>
   </ItemGroup>
 </Project>

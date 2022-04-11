@@ -9,22 +9,92 @@
 
 using catalogoApi.Models;
 using CatalogoApi.Context;
+using CatalogoApi.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using CatalogoApi.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container. - ConfigureServices
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c => {
+  c.SwaggerDoc("v1", new OpenApiInfo {Title = "CatalogoApi", Version = "v1"});
+
+  c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme() {
+    Name = "Authorization",
+    Type = SecuritySchemeType.ApiKey,
+    Scheme = "Bearer",
+    BearerFormat = "JWT",
+    In = ParameterLocation.Header,
+    Description = @"JWT Authorization header using the Bearer scheme.
+                  Enter 'Bearer'[space].Example: \'Bearer 12345abcdef\'",
+
+  });
+  c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+    {
+      new OpenApiSecurityScheme {
+        Reference = new OpenApiReference {  
+          Type = ReferenceType.SecurityScheme,
+          Id = "Bearer"
+        }
+      },
+      new string[] {}
+    }   
+  });
+});
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
+builder.Services.AddSingleton<ITokenService>(new TokenService());
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+  options.TokenValidationParameters = new TokenValidationParameters {
+    ValidateIssuer = true,
+    ValidateAudience = true,
+    ValidateLifetime = true,
+    ValidateIssuerSigningKey = true,
+
+    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+    ValidAudience = builder.Configuration["Jwt:Audience"],
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+  };
+});
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
-//definir endpoints - Categortia 
+// definir endpoints - Login
+app.MapPost("/login", [AllowAnonymous] (UserModel UserModel, ITokenService tokenService) => {
+  if(UserModel == null) {
+    return Results.BadRequest("Login Inválido");
+  }
+
+  if(UserModel.UserName == "ana" && UserModel.Password == "qwert") {
+    var tokenString = tokenService.GerarToken(app.Configuration["Jwt:Key"],
+        app.Configuration["Jwt:Issuer"],
+        app.Configuration["Jwt:Audience"],
+        UserModel);
+        return Results.Ok(new {token = tokenString});
+    
+  } else {
+    return Results.BadRequest("Login Inválido");
+  }
+
+}).Produces(StatusCodes.Status400BadRequest)
+.Produces(StatusCodes.Status200OK)
+.WithName("Login")
+.WithTags("Autenticacao");
+
+//definir endpoints - Categoria 
 app.MapGet("/categoriaprodutos", async (AppDbContext db) => await db.Categorias.Include(c => c.Produtos).ToListAsync()
 )
 .Produces<List<Categoria>>(StatusCodes.Status200OK)
@@ -47,7 +117,8 @@ app.MapPost("/categorias", async (Categoria categoria, AppDbContext db) => {
 // - corpo da resposta - Um array de representação JSON de objetos Categoria
 // - código de status - 200 (OK)
 app.MapGet("/categorias", async (AppDbContext db) => await db.Categorias.ToListAsync())
-.WithTags("Categorias");
+.WithTags("Categorias")
+.RequireAuthorization();
 
 // endpoint para obter uma Categoria pelo seu ID
 app.MapGet("/categorias/{id:int}", async (int id, AppDbContext db) => {
@@ -212,5 +283,30 @@ if(app.Environment.IsDevelopment()) {
   app.UseSwaggerUI();
 }
 
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.Run();
+
+// Autenticação JWT (Json Web Tokens) - Roteiro
+
+// 1 - Geração do token JWT
+// - Criar classe UserModel (username e password) *
+// - Criar seção JWT no arquivo appsettings.json definindo a chave secreta *
+// - Incluir o pacote Microsoft.AspNetCore.Authentication.JwtBearer *
+// - Criar o serviço para gerar o token para o usuário usando a chave simétrica
+//   - Definir as claims *
+//   - Criar a chave simétrica usando chave secreta *
+//   - Criar as credenciais usando um algoritmo (HS256) *
+//   - Gerar o token *
+// - Registrar o serviço no contêiner DI * 
+
+// 2 - Validação do token JWT
+// - Definir o middleware de autenticação Jwt na aplicação
+// - Configurar a validaçao do token usando a chave simétrica
+// - Definir os serviços de autenticação e autorização na aplicação
+
+// 3 - Criação do Endpoint para Login
+// - Validar credenciais do usuário (nome e senha)
+// - Gerar o token Jwt para o usuário autenticado
+
+// 4 - Proteger os endpoints
