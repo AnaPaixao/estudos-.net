@@ -25,9 +25,7 @@ app.MapProdutosEndpoints();
 
 var environment = app.Environment;
 
-app.UseExceptionHandler(environment)
-   .UseSwaggerEndpoints()
-   .UseAppCors();
+app.UseExceptionHandling(environment).UseSwaggerEndpoints().UseAppCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
